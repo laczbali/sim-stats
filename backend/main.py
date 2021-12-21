@@ -2,6 +2,9 @@ from flask import Flask, json, make_response, request
 from flask_cors import CORS
 import gzip
 
+from udp_listener import UdpListener
+from threading import Thread
+
 app = Flask(__name__)
 cors = CORS(
     app,
@@ -29,5 +32,14 @@ def hello():
 
     return resp
 
+def udp_test():
+    listner = UdpListener("127.0.0.1", 20777)
+    Thread(target=listner.start_listen, daemon=True).start()
+    print(f"listening started on {listner.ip}:{listner.port}")
+    while True:
+        print(listner.data)
+
+
 if __name__ == '__main__':
-    app.run()
+    udp_test()
+    # app.run()
