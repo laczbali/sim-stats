@@ -1,8 +1,8 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow } = require('electron');
 const url = require("url");
 const path = require("path");
 
-let mainWindow
+let mainWindow;
 
 function createWindow() {
     loadBackend();
@@ -23,11 +23,11 @@ function createWindow() {
         })
     );
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
-        mainWindow = null
-    })
+        mainWindow = null;
+    });
 }
 
 function loadBackend() {
@@ -36,23 +36,23 @@ function loadBackend() {
 
     backend.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
-      });
-      
+    });
+
     backend.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
     });
-    
+
     backend.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     });
 }
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit()
-})
+    if (process.platform !== 'darwin') { app.quit(); }
+});
 
 app.on('activate', function () {
-    if (mainWindow === null) createWindow()
-})
+    if (mainWindow === null) { createWindow(); }
+});
