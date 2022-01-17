@@ -1,0 +1,6 @@
+# temp files
+*.~vsdx
+
+# temp folders
+*/__pycache__
+*/temp
