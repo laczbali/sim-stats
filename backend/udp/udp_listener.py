@@ -2,9 +2,11 @@ import socket
 
 class UdpListener:
 
+
     ip = None
     port = None
     data = None
+
 
     def __init__(self, ip, port):
         """
@@ -17,6 +19,7 @@ class UdpListener:
         self.sock = socket.socket(socket.AF_INET, # Internet
                                   socket.SOCK_DGRAM) # UDP
         self.sock.bind((self.ip, self.port))
+
 
     def start_listen(self):
         """
