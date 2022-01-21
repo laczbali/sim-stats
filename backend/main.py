@@ -1,5 +1,5 @@
-from classes.AppSettings import AppSettings
-from classes.UdpHandler import UdpHandler
+from classes.base.AppSettings import AppSettings
+from classes.base.UdpHandler import UdpHandler
 
 def main():
     udp = UdpHandler()
