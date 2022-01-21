@@ -1,7 +1,7 @@
 from flask import Flask, json, make_response, request
 from flask_cors import CORS
 import gzip
-from udp.udp_handler import UdpHandler
+from udp.udp_handler import OldUdpHandler
 
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ cors = CORS(
 @app.route("/test")
 def hello():
 
-    udp = UdpHandler()
+    udp = OldUdpHandler()
 
     content = gzip.compress(
         json.dumps(
@@ -34,7 +34,7 @@ def hello():
 
 
 if __name__ == "__main__":
-    udp_handler = UdpHandler()
+    udp_handler = OldUdpHandler()
     udp_handler.udp_test()
 
     app.run()
