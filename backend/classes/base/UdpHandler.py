@@ -13,9 +13,9 @@ class UdpHandler:
     """
 
     # class (static) variables
-    listener_thread: Thread = None
-    stop_thread: bool = False
-    data: bytes = None
+    _listener_thread: Thread = None
+    _stop_thread: bool = False
+    _data: bytes = None
 
 
 
@@ -31,16 +31,16 @@ class UdpHandler:
         """
 
         # close previous connection if one exists
-        if UdpHandler.listener_thread is not None:
-            while UdpHandler.listener_thread.is_alive():
-                UdpHandler.stop_thread = True
-        UdpHandler.stop_thread = False
+        if UdpHandler._listener_thread is not None:
+            while UdpHandler._listener_thread.is_alive():
+                UdpHandler._stop_thread = True
+        UdpHandler._stop_thread = False
 
         # start new listener thread
-        UdpHandler.listener_thread = Thread(
-            target=UdpHandler.listen, daemon=True, args=(port, buffer_size)
+        UdpHandler._listener_thread = Thread(
+            target=UdpHandler._listen, daemon=True, args=(port, buffer_size)
         )
-        UdpHandler.listener_thread.start()
+        UdpHandler._listener_thread.start()
 
     
 
@@ -48,7 +48,7 @@ class UdpHandler:
         """
         Stops listening.
         """
-        UdpHandler.stop_thread = True
+        UdpHandler._stop_thread = True
 
 
 
@@ -56,11 +56,11 @@ class UdpHandler:
         """
         Returns data from the last UDP packet received.
         """
-        return UdpHandler.data
+        return UdpHandler._data
 
 
 
-    def listen(port, buffer_size) -> None:
+    def _listen(port, buffer_size) -> None:
         """
         Listens for incoming UDP packets.
         Stores data in UdpHandler.data
@@ -72,8 +72,8 @@ class UdpHandler:
         sock.settimeout(0.1)
 
         # listen for incoming UDP packets until stop_thread is set to True
-        while not UdpHandler.stop_thread:
+        while not UdpHandler._stop_thread:
             try:
-                UdpHandler.data, addr = sock.recvfrom(buffer_size)
+                UdpHandler._data, addr = sock.recvfrom(buffer_size)
             except socket.timeout:
                 pass
