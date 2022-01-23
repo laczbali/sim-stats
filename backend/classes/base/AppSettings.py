@@ -2,6 +2,7 @@ import json
 import os
 from typing import Any
 
+
 class AppSettings:
     """
     Reads and writes settings from/to settings.json
@@ -15,7 +16,7 @@ class AppSettings:
 
 
 
-    def read_setting(self, key : str):
+    def read_setting(self, key: str):
         """
         Reads a setting from settings.json
         """
@@ -49,7 +50,7 @@ class AppSettings:
 
         like so {base: {x: y}} -> {base: {x: y, newkey: newval}}}
         """
-        
+
         with open("settings.json", "r") as f:
             settings = json.load(f)
 

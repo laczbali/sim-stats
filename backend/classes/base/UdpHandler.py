@@ -1,4 +1,3 @@
-from mimetypes import init
 from threading import Thread
 import socket
 
@@ -42,7 +41,7 @@ class UdpHandler:
         )
         UdpHandler._listener_thread.start()
 
-    
+
 
     def stop_listen(self) -> None:
         """
