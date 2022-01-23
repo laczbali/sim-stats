@@ -18,6 +18,8 @@ This all means that **you need to manully select the track and car either at the
 {"game_settings": {"DirtRally2": {"udp_port": 20777, "udp_buffer_size": 1024}}}
 ```
 
+# Special thanks
+- **ErlerPhilipp** & **soong-construction**, for helping me understand the data structure of Dirt Rally 2.0
 # References
 ## Tech Stack
 https://buddy.works/tutorials/building-a-desktop-app-with-electron-and-angular
