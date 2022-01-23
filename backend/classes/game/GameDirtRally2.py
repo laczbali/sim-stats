@@ -24,12 +24,16 @@ class GameDirtRally2(GameHandler):
         Parses the latest UDP packet received, returns it in the generalized format
         """
 
-        run_time = GameDirtRally2._bit_stream_to_float32(
+        lap_time = GameDirtRally2._bit_stream_to_float32(
             self.udp_data(), DirtRally2Fields.lap_time.value * 4
+        )
+        last_lap_time = GameDirtRally2._bit_stream_to_float32(
+            self.udp_data(), DirtRally2Fields.last_lap_time.value * 4
         )
 
         run_data = RunData()
-        run_data.run_time_sec = run_time
+        run_data.run_time_sec = lap_time
+        run_data.last_lap_time_sec = last_lap_time
 
         return run_data
 
@@ -54,20 +58,12 @@ class GameDirtRally2(GameHandler):
         while self.get_state() != GameHandlerState.FINISHED:
             pass
 
-        runtime_sec = self.run_result.run_time_sec
+        runtime_sec = self.run_result.last_lap_time_sec
         print(
             "{:02.0f}:{:02.0f}:{:03.0f}".format(
                 runtime_sec // 60, math.floor(runtime_sec % 60), (runtime_sec % 1) * 1000
             )
         )
-
-        # inaccuacies
-        # -25 ms
-        # -23 ms
-        # -122 ms
-        # -52 ms
-        # we may miss the last couple of packets
-        # store udp data in an array?
 
 
 
@@ -78,7 +74,6 @@ class GameDirtRally2(GameHandler):
         finished = False
 
         while not finished:
-            last_valid_data = data
             data = self.parse_udp_data()
 
             # Change state based on current and last-iteration runtime values
@@ -91,7 +86,7 @@ class GameDirtRally2(GameHandler):
                 self._set_state(GameHandlerState.RUNNING)
 
             if last_runtime_value != 0 and current_runtime_value == 0:
-                self.run_result = last_valid_data
+                self.run_result = data
                 self._set_state(GameHandlerState.FINISHED)
                 finished = True        
 
