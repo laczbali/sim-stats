@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Any
+
+from classes.game.RunData import RunData
 from classes.base.AppSettings import AppSettings
 from classes.base.UdpHandler import UdpHandler
 
@@ -17,9 +20,14 @@ class GameHandler(ABC):
         self.udp_handler = None
         self.game_settings = None
 
+        self._state: GameHandlerState = GameHandlerState.IDLE
+        self.run_result = None
+
         classname = self.__class__.__name__
         if classname == "GameHandler":
-            raise NotImplementedError("GameHandler is an abstract class and cannot be instantiated directly.")
+            raise NotImplementedError(
+                "GameHandler is an abstract class and cannot be instantiated directly."
+            )
 
         # Get game-specific settings, based on the game's name
         game_name = classname.replace("Game", "")
@@ -50,7 +58,9 @@ class GameHandler(ABC):
         """
         Starts listening for UDP data
         """
-        self.udp_handler.start_listen(self.game_settings["udp_port"], self.game_settings["udp_buffer_size"])
+        self.udp_handler.start_listen(
+            self.game_settings["udp_port"], self.game_settings["udp_buffer_size"]
+        )
 
 
 
@@ -70,24 +80,33 @@ class GameHandler(ABC):
 
 
 
+    def _set_state(self, new_state):
+        """
+        Sets the current state of the game handler
+        """
+        self._state = new_state
+        pass
+
+
+
+    def get_state(self):
+        """
+        Returns the current state of the game handler
+        """
+        return self._state
+
     # --------------------------------------------------------------------------------------------------------------
     # Abstartct (forced to override) methods:
     # --------------------------------------------------------------------------------------------------------------
 
     @abstractmethod
-    def parse_udp_data(self):
+    def parse_udp_data(self) -> RunData:
         pass
 
 
 
     @abstractmethod
-    def wait_for_run_start(self):
-        pass
-
-
-
-    @abstractmethod
-    def wait_for_run_end(self):
+    def start_run(self):
         pass
 
 
@@ -98,12 +117,24 @@ class GameHandler(ABC):
 
 
 
-    @abstractmethod
-    def get_run_results(self):
-        pass
+    # @abstractmethod
+    # def get_run_results(self):
+    #     pass
 
 
 
     @abstractmethod
     def process_run(self):
         pass
+
+
+
+class GameHandlerState(Enum):
+    """
+    Enum for the game handlers states
+    """
+
+    IDLE = 0
+    WAITING_FOR_START = 1
+    RUNNING = 2
+    FINISHED = 3
