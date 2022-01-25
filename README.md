@@ -1,8 +1,10 @@
 # Dirt Rally 2.0
 ## Notes
-The game does not report the track and car info in the UDP structure. It is possible to infer those from other fields *(see the implementations of [ErlerPhilipp](https://github.com/ErlerPhilipp/dr2_logger) and [soong-construction](https://github.com/soong-construction/dirt-rally-time-recorder)*), however at least currently this functionality is not present in **sim-stats**.
+As of now the **Rallycross mode is not supported.** It will be added in a future version.
 
-This all means that **you need to manully select the track and car either at the start or at the end of a run**.
+Since the game does not provide the car & track data directly, they need to be inferred from other parts of the UDP data (thanks to https://github.com/ErlerPhilipp/dr2_logger for that ! ).
+However in the case of a couple of cars they can't be indentified uniquely based on those data.
+**This means that if you set the car to "AUTO-DETECT" it can result in a bad configuration.** You can correct it at the end of the run.
 
 ## Setup
 - Open `C:\\Users\\USERNAME\\Documents\\My Games\\DiRT Rally 2.0\\hardwaresettings\\hardware_settings_config.xml`
