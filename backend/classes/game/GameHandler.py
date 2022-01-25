@@ -1,10 +1,38 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
+import math
 
 from classes.game.RunData import RunData
 from classes.base.AppSettings import AppSettings
 from classes.base.UdpHandler import UdpHandler
+
+
+
+class GameHandlerState(Enum):
+    """
+    Enum for the game handlers states
+    """
+
+    IDLE = 0
+    WAITING_FOR_START = 1
+    RUNNING = 2
+    FINISHED = 3
+    ABORTED = 4
+
+
+class GameHandlerProcessMode(Enum):
+    """
+    Enum for the game handlers save modes
+    """
+
+    DISCARD = 0
+    BEST = 1
+    LAST = 2
+    ALL = 3
+    MEAN = 4
+    MEDIAN = 5
+
 
 
 class GameHandler(ABC):
@@ -86,7 +114,7 @@ class GameHandler(ABC):
 
     # state handling methods ----------------------------------------------------------
 
-    def _set_state(self, new_state):
+    def _set_state(self, new_state: GameHandlerState):
         """
         Sets the current state of the game handler
         """
@@ -95,7 +123,7 @@ class GameHandler(ABC):
 
 
 
-    def get_state(self):
+    def get_state(self) -> GameHandlerState:
         """
         Returns the current state of the game handler
         """
@@ -108,8 +136,55 @@ class GameHandler(ABC):
 
 
 
-    def process_run(self):
-        pass
+    def process_run(self, process_mode: GameHandlerProcessMode, edited_data = None, discard_bottom_percent: float = 0.0, discard_top_percent: float = 0.0):
+        """
+        Saves or discards the run data, as selected by the user
+
+        :param process_mode: what to do with the data? Discard, or save in one of several ways
+        :param edited_data: None, if the data is to be handled as it was, or RunData type if it was edited after the run was over
+        :param discard_bottom_percent: how many percent of the data to discard from the bottom
+        :param discard_top_percent: how many percent of the data to discard from the top
+        """
+
+        # use edited_data, if provided
+        data_to_process: RunData = edited_data if edited_data is not None else self._run_result
+
+        # discard top_percent of data, if needed
+        if discard_top_percent > 0.0 and len(data_to_process.lap_times_sec) > 1:
+            data_to_process.lap_times_sec = data_to_process.lap_times_sec[ : int(math.ceil(len(data_to_process.lap_times_sec) * (1.0 - (discard_top_percent / 100.0))))]
+
+        # discard bottom_percent of data, if needed
+        if discard_bottom_percent > 0.0 and len(data_to_process.lap_times_sec) > 1:
+            data_to_process.lap_times_sec = data_to_process.lap_times_sec[int(math.floor(len(data_to_process.lap_times_sec) * (discard_bottom_percent / 100.0))) : ]
+
+        # if we discarded everything with pre-processing, set mode to discard
+        if len(data_to_process.lap_times_sec) == 0:
+            process_mode = GameHandlerProcessMode.DISCARD
+
+        # process data as needed
+        match process_mode:
+            case GameHandlerProcessMode.DISCARD:
+                pass
+
+            case GameHandlerProcessMode.BEST:
+                pass
+
+            case GameHandlerProcessMode.LAST:
+                pass
+
+            case GameHandlerProcessMode.ALL:
+                pass
+
+            case GameHandlerProcessMode.MEAN:
+                pass
+
+            case GameHandlerProcessMode.MEDIAN:
+                pass
+
+            case _:
+                raise ValueError("Invalid process mode")
+
+
 
     # --------------------------------------------------------------------------------------------------------------
     # Abstartct (forced to override) methods:
@@ -130,21 +205,3 @@ class GameHandler(ABC):
     @abstractmethod
     def stop_run(self):
         pass
-
-
-    @abstractmethod
-    def get_run_progress(self):
-        pass
-
-
-
-class GameHandlerState(Enum):
-    """
-    Enum for the game handlers states
-    """
-
-    IDLE = 0
-    WAITING_FOR_START = 1
-    RUNNING = 2
-    FINISHED = 3
-    ABORTED = 4

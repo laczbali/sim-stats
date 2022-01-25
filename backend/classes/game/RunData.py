@@ -7,11 +7,11 @@ class RunData:
     """
     
     def __init__(self):
-        self.lap_times_sec = []
-        self.run_time_sec : float = 0
+        self.lap_times_sec = [] # user chooses how it is saved in DB (GameHandler.GameHandlerProcessMode)
+        self.run_time_sec : float = 0 # does not get saved in DB
 
-        self.total_laps : float = 0
-        self.laps_completed : float = 0
+        self.total_laps : float = 0 # does not get saved in DB
+        self.laps_completed : float = 0 # does not get saved in DB
 
         self.car = ""
         self.car_class = ""

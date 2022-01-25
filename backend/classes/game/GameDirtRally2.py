@@ -39,7 +39,9 @@ class GameDirtRally2(GameHandler):
         else:
             run_data = self._run_result
         
-        # lap times are not relevant for Dirt Rally 2, we only need one
+        # lap times are not relevant for Dirt Rally 2
+        # however the lap_time field contains the actual value of the current run
+        # and we use that to detect state changes
         if len(run_data.lap_times_sec) == 0:
             run_data.lap_times_sec.append(0)
         run_data.lap_times_sec[0] = GameDirtRally2._bit_stream_to_float32(
@@ -154,6 +156,10 @@ class GameDirtRally2(GameHandler):
                 else:
                     self._set_state(GameHandlerState.ABORTED)
 
+        # adjust data stucture, because the general structure expects the run result in the lap_times_sec array
+        self._run_result.lap_times_sec = [self._run_result.run_time_sec]
+
+        # shut down UDP listener
         self._stop_listening()
         print("* stopping run for DirtRally2")
 
@@ -167,17 +173,6 @@ class GameDirtRally2(GameHandler):
         self._stop = True
         self._set_state(GameHandlerState.ABORTED)
 
-
-
-    # abstractmethod
-    def get_run_progress(self):
-        """
-        Returns the run data.
-
-        While it is in the RUNNING state, there is a non-trivial delay between the value of this, and what the game displays.
-        Showing this on the frontend should be with caution.
-        """
-        return self._run_result
 
 
 
