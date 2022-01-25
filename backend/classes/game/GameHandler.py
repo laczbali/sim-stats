@@ -21,7 +21,7 @@ class GameHandler(ABC):
         self.game_settings = None
 
         self._state: GameHandlerState = GameHandlerState.IDLE
-        self.run_result = None
+        self._run_result = None
 
         classname = self.__class__.__name__
         if classname == "GameHandler":
@@ -46,6 +46,8 @@ class GameHandler(ABC):
 
 
 
+    # misc methods --------------------------------------------------------------------
+
     def get_default_settings(self) -> Any:
         """
         Returns the default settings that are common between games
@@ -54,7 +56,9 @@ class GameHandler(ABC):
 
 
 
-    def start_listening(self):
+    # UDP related methods -------------------------------------------------------------
+
+    def _start_listening(self):
         """
         Starts listening for UDP data
         """
@@ -64,7 +68,7 @@ class GameHandler(ABC):
 
 
 
-    def stop_listening(self):
+    def _stop_listening(self):
         """
         Stops listening for UDP data
         """
@@ -80,6 +84,8 @@ class GameHandler(ABC):
 
 
 
+    # state handling methods ----------------------------------------------------------
+
     def _set_state(self, new_state):
         """
         Sets the current state of the game handler
@@ -94,6 +100,16 @@ class GameHandler(ABC):
         Returns the current state of the game handler
         """
         return self._state
+
+
+
+    def is_run_over(self):
+        return self._state == GameHandlerState.FINISHED or self._state == GameHandlerState.ABORTED
+
+
+
+    def process_run(self):
+        pass
 
     # --------------------------------------------------------------------------------------------------------------
     # Abstartct (forced to override) methods:
@@ -112,19 +128,12 @@ class GameHandler(ABC):
 
 
     @abstractmethod
-    def get_run_progress(self):
+    def stop_run(self):
         pass
 
 
-
-    # @abstractmethod
-    # def get_run_results(self):
-    #     pass
-
-
-
     @abstractmethod
-    def process_run(self):
+    def get_run_progress(self):
         pass
 
 
@@ -138,3 +147,4 @@ class GameHandlerState(Enum):
     WAITING_FOR_START = 1
     RUNNING = 2
     FINISHED = 3
+    ABORTED = 4
