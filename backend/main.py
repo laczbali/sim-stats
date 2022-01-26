@@ -20,7 +20,7 @@ def main():
         "* run Over: "
         + gh.get_state().name
         + " in "
-        + RunData.format_time(gh.get_run_progress().run_time_sec)
+        + RunData.format_time(gh.get_run_result().run_time_sec)
     )
 
 

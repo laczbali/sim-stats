@@ -136,7 +136,18 @@ class GameHandler(ABC):
 
 
 
-    def process_run(self, process_mode: GameHandlerProcessMode, edited_data = None, discard_bottom_percent: float = 0.0, discard_top_percent: float = 0.0):
+    def get_run_result(self) -> RunData:
+        """
+        Returns the RunData if the Run is over, None otherwise
+        """
+        if self.is_run_over():
+            return self._run_result
+        else:
+            return None
+
+
+
+    def process_run(self, process_mode: GameHandlerProcessMode, edited_data = None):
         """
         Saves or discards the run data, as selected by the user
 
@@ -148,18 +159,6 @@ class GameHandler(ABC):
 
         # use edited_data, if provided
         data_to_process: RunData = edited_data if edited_data is not None else self._run_result
-
-        # discard top_percent of data, if needed
-        if discard_top_percent > 0.0 and len(data_to_process.lap_times_sec) > 1:
-            data_to_process.lap_times_sec = data_to_process.lap_times_sec[ : int(math.ceil(len(data_to_process.lap_times_sec) * (1.0 - (discard_top_percent / 100.0))))]
-
-        # discard bottom_percent of data, if needed
-        if discard_bottom_percent > 0.0 and len(data_to_process.lap_times_sec) > 1:
-            data_to_process.lap_times_sec = data_to_process.lap_times_sec[int(math.floor(len(data_to_process.lap_times_sec) * (discard_bottom_percent / 100.0))) : ]
-
-        # if we discarded everything with pre-processing, set mode to discard
-        if len(data_to_process.lap_times_sec) == 0:
-            process_mode = GameHandlerProcessMode.DISCARD
 
         # process data as needed
         match process_mode:
