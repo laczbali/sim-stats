@@ -17,6 +17,8 @@ class GameDirtRally2(GameHandler):
         self.car_list = DirtRally2CarList()
         self.track_list = DirtRally2TrackList()
 
+
+
     def _bit_stream_to_float32(data, pos):
         try:
             return struct.unpack("f", data[pos : pos + 4])[0]
@@ -429,16 +431,16 @@ class DirtRally2TrackList:
             # Monte Carlo, Monaco
             [10805.220703125, 1276.76611328125,    'MC, Monte Carlo, Route de Turini'],
             [10866.8603515625, -2344.705810546875, 'MC, Monte Carlo, Vallee descendante'],
-            [4730.02001953125, 283.7648620605469,  'MC, Monte Carlo, Col de Turini – Sprint en descente'],
+            [4730.02001953125, 283.7648620605469,  'MC, Monte Carlo, Col de Turini - Sprint en descente'],
             [4729.5400390625, -197.3816375732422,  'MC, Monte Carlo, Col de Turini sprint en Montee'],
-            [5175.91015625, -131.84573364257812,   'MC, Monte Carlo, Col de Turini – Descente'],
-            [5175.91015625, -467.3677062988281,    'MC, Monte Carlo, Gordolon – Courte montee'],
+            [5175.91015625, -131.84573364257812,   'MC, Monte Carlo, Col de Turini - Descente'],
+            [5175.91015625, -467.3677062988281,    'MC, Monte Carlo, Gordolon - Courte montee'],
             [4015.35986328125, -991.9784545898438, 'MC, Monte Carlo, Route de Turini (Descente)'],
-            [3952.150146484375, 1276.780517578125, 'MC, Monte Carlo, Approche du Col de Turini – Montee'],
-            [9831.4501953125, -467.483154296875,   'MC, Monte Carlo, Pra d´Alart'],
+            [3952.150146484375, 1276.780517578125, 'MC, Monte Carlo, Approche du Col de Turini - Montee'],
+            [9831.4501953125, -467.483154296875,   'MC, Monte Carlo, Pra d\'Alart'],
             [9832.0205078125, 283.4727478027344,   'MC, Monte Carlo, Col de Turini Depart'],
             [6843.3203125, -991.945068359375,      'MC, Monte Carlo, Route de Turini (Montee)'],
-            [6846.830078125, -2344.592529296875,   'MC, Monte Carlo, Col de Turini – Depart en descente'],
+            [6846.830078125, -2344.592529296875,   'MC, Monte Carlo, Col de Turini - Depart en descente'],
 
             # Powys, Wales
             [4821.64990234375, 2047.56201171875,   'UK, Powys, Pant Mawr Reverse'],
