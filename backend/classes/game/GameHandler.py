@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 import math
+from numpy import median
 
+from classes.base.DBHandler import DBHandler
 from classes.game.RunData import RunData
 from classes.base.AppSettings import AppSettings
 from classes.base.UdpHandler import UdpHandler
@@ -49,7 +51,7 @@ class GameHandler(ABC):
         self.game_settings = None
 
         self._state: GameHandlerState = GameHandlerState.IDLE
-        self._run_result = None
+        self._run_result: RunData = None
 
         classname = self.__class__.__name__
         if classname == "GameHandler":
@@ -147,7 +149,7 @@ class GameHandler(ABC):
 
 
 
-    def process_run(self, process_mode: GameHandlerProcessMode, edited_data = None):
+    def process_run(self, process_mode: GameHandlerProcessMode, edited_data: RunData = None):
         """
         Saves or discards the run data, as selected by the user
 
@@ -157,32 +159,82 @@ class GameHandler(ABC):
         :param discard_top_percent: how many percent of the data to discard from the top
         """
 
+        # make sure we are in a FINISHED or ABORTED state
+        if not self.is_run_over():
+            raise RuntimeError("Run is not over yet")
+
         # use edited_data, if provided
         data_to_process: RunData = edited_data if edited_data is not None else self._run_result
 
         # process data as needed
         match process_mode:
             case GameHandlerProcessMode.DISCARD:
+                # do nothing
                 pass
 
             case GameHandlerProcessMode.BEST:
+                # sort laptimes, keep only the smallest one
+                data_to_process.lap_times_sec.sort()
+                data_to_process.lap_times_sec = data_to_process.lap_times_sec[:1]
                 pass
 
             case GameHandlerProcessMode.LAST:
+                # keep only the last lap
+                data_to_process.lap_times_sec = data_to_process.lap_times_sec[-1:]
                 pass
 
             case GameHandlerProcessMode.ALL:
+                # do nothing
                 pass
 
             case GameHandlerProcessMode.MEAN:
+                # calculate mean, keep only that
+                lap_mean_time = sum(data_to_process.lap_times_sec) / len(data_to_process.lap_times_sec)
+                data_to_process.lap_times_sec = [lap_mean_time]
                 pass
 
             case GameHandlerProcessMode.MEDIAN:
+                # calculate median, keep only that
+                lap_median_time = median(data_to_process.lap_times_sec)
+                data_to_process.lap_times_sec = [lap_median_time]
                 pass
 
             case _:
                 raise ValueError("Invalid process mode")
 
+        # save data
+        if process_mode != GameHandlerProcessMode.DISCARD:
+            DBHandler.save_run(data_to_process)
+
+        # reset instance
+        self._reset_instance()
+
+
+
+    def _reset_instance(self, keep_config = False):
+        """
+        Resets the class instance to a known state, so that a new run can be started
+
+        Resets the state to IDLE, and clears the run result (keeps the track and car config if keep_config is True)
+        """
+        
+        if keep_config:
+            # keep config values from the previous run
+            track_name = self._run_result.track
+            track_conditions = self._run_result.track_conditions
+            car_name = self._run_result.car
+            car_class = self._run_result.car_class
+
+            # set up a new run, with the previous config values
+            self._run_result = RunData()
+            self._run_result.track = track_name
+            self._run_result.track_conditions = track_conditions
+            self._run_result.car = car_name
+            self._run_result.car_class = car_class
+        else:
+            self._run_result = None
+
+        self._state = GameHandlerState.IDLE
 
 
     # --------------------------------------------------------------------------------------------------------------
