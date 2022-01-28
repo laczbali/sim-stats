@@ -66,23 +66,11 @@ class GameHandler(ABC):
         except (TypeError, KeyError):
             # if game_settings is missing, "None" is returned. Accessing it with game_name will raise a TypeError
             # if game_settings is found, but the game_name is not it it, a KeyError is raised
-
-            # set default values
-            self.game_settings = self.__class__.get_default_settings()
-            AppSettings().append_setting("game_settings", game_name, self.game_settings)
+            print("* missing settings for game: " + game_name)
+            raise Exception()
 
         # Create UDP handler
         self.udp_handler = UdpHandler()
-
-
-
-    # misc methods --------------------------------------------------------------------
-
-    def get_default_settings(self) -> Any:
-        """
-        Returns the default settings that are common between games
-        """
-        return {"udp_port": 20777, "udp_buffer_size": 1024}
 
 
 
