@@ -263,3 +263,9 @@ class GameHandler(ABC):
     @abstractmethod
     def stop_run(self):
         pass
+
+
+
+    @abstractmethod
+    def get_attributes():
+        pass

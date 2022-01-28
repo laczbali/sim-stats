@@ -5,6 +5,7 @@ import struct
 from threading import Thread
 from collections import defaultdict
 
+from classes.base.DBHandler import DBHandler
 from classes.game.RunData import RunData
 from classes.game.GameHandler import GameHandler, GameHandlerState
 
@@ -175,6 +176,27 @@ class GameDirtRally2(GameHandler):
         self._stop = True
         self._set_state(GameHandlerState.ABORTED)
 
+
+
+    # abstractmethod
+    def get_attributes():
+        return {
+            "car": {
+                "supports_car_detection": True,
+                "saved_cars": DBHandler.get_saved_cars("DirtRally2"),
+                "saved_car_classes": DBHandler.get_saved_car_classes("DirtRally2")
+            },
+
+            "track": {
+                "supports_track_detection": True,
+                "saved_tracks": DBHandler.get_saved_tracks("DirtRally2"),
+                "saved_track_conditions": DBHandler.get_saved_track_conditions("DirtRally2")
+            },
+
+            "saved_tags": DBHandler.get_saved_tags("DirtRally2"),
+
+            "additional_fields": []
+        }
 
 
 
