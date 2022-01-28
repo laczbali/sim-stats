@@ -237,6 +237,25 @@ class GameHandler(ABC):
         self._state = GameHandlerState.IDLE
 
 
+
+    def shutdown(self):
+        """
+        Does everything necessary to properly dispose of the class instance
+        """
+        
+        if self.get_state() == GameHandlerState.IDLE:
+            return
+
+        if self.is_run_over() == False:
+            self.stop_run()
+            self.process_run(GameHandlerProcessMode.DISCARD)
+            return
+
+        if self.get_state() == GameHandlerState.FINISHED:
+            self.process_run(GameHandlerProcessMode.DISCARD)
+            return
+
+
     # --------------------------------------------------------------------------------------------------------------
     # Abstartct (forced to override) methods:
     # --------------------------------------------------------------------------------------------------------------
