@@ -27,3 +27,10 @@ class RunData:
         return "{:02.0f}:{:02.0f}:{:03.0f}".format(
             timesec // 60, math.floor(timesec % 60), (timesec % 1) * 1000
         )
+
+
+
+    def set_parameters(parameters):
+        """
+        """
+        pass
