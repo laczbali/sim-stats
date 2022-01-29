@@ -164,7 +164,8 @@ class GameDirtRally2(GameHandler):
 
         # shut down UDP listener
         self._stop_listening()
-        print("* stopping run for DirtRally2")
+        result_time_str = RunData.format_time(self._run_result.run_time_sec)
+        print(f"* stopping run for DirtRally2 ( {result_time_str} )")
 
 
 
