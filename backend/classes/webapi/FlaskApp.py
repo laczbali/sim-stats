@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
+import logging
 
 from classes.webapi.JsonResponse import JsonResponse
 from classes.game.GameWrapper import GameWrapper
@@ -12,6 +13,8 @@ class FlaskApp:
             origins=["http://127.0.0.1"],
             supports_credentials=True
     )
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     
 
 
@@ -44,3 +47,28 @@ class FlaskApp:
 
         # return attributes of game
         return JsonResponse.make_response(GameWrapper.get_game_attributes(game_name))
+
+
+
+    @app.route("/game/start", methods=["POST"])
+    def start_run():
+        """
+        Starts a new run of a game
+        """
+
+        # get parameters from request
+        parameters = request.get_json()
+
+        # start the run
+        return JsonResponse.make_response(GameWrapper.start_run(parameters))
+
+
+
+    @app.route("/game/stop", methods=["POST"])
+    def stop_run():
+        """
+        Stops the current run of a game
+        """
+
+        # stop the run
+        return JsonResponse.make_response(GameWrapper.stop_run())
