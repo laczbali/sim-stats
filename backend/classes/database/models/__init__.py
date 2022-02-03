@@ -5,5 +5,6 @@ from . import (
     Game,
     Track,
     Car,
-    Run
+    Run,
+    Tag
 )
