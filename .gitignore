@@ -4,3 +4,6 @@
 # temp folders
 __pycache__/
 temp/
+
+# database
+*.sqlite3

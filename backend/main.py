@@ -1,8 +1,11 @@
+from classes.database.DBHandler import DBHandler
 from classes.webapi.FlaskApp import FlaskApp
 
-
 def main():
-    FlaskApp.app.run()
+    # FlaskApp.app.run()
+    
+    DBHandler.test_get()
+
     pass
 
 
