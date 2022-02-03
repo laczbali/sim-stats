@@ -4,7 +4,7 @@ from typing import Any
 import math
 from numpy import median
 
-from classes.base.DBHandler import DBHandler
+from classes.database.DBHandler import DBHandler
 from classes.game.RunData import RunData
 from classes.base.AppSettings import AppSettings
 from classes.base.UdpHandler import UdpHandler

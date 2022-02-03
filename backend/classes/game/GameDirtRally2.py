@@ -5,7 +5,7 @@ import struct
 from threading import Thread
 from collections import defaultdict
 
-from classes.base.DBHandler import DBHandler
+from classes.database.DBHandler import DBHandler
 from classes.game.RunData import RunData
 from classes.game.GameHandler import GameHandler, GameHandlerState
 
