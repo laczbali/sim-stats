@@ -7,5 +7,9 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
         "**/__pycache__": true
+    },
+
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}/backend",
     }
 }
