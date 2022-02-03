@@ -11,3 +11,5 @@ class Game(Base):
     name = Column(String, nullable=False, unique=True)
 
     tracks = relationship("Track", back_populates="game")
+    cars = relationship("Car", back_populates="game")
+    runs = relationship("Run", back_populates="game")
