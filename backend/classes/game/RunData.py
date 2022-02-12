@@ -21,6 +21,8 @@ class RunData:
         self.track = ""
         self.track_conditions = ""
 
+        self.tags = []
+
         self.run_date : datetime = datetime.datetime.now()
     
 
@@ -32,7 +34,27 @@ class RunData:
 
 
 
-    def set_parameters(parameters):
+    def set_parameters(self, parameters):
         """
+        Set the parameters of the run
+        
+        Available parameters:
+        - car, car_class, track, track_conditions, tags
         """
-        pass
+    
+        if "car" in parameters:
+            self.car = parameters["car"]
+
+        if "car_class" in parameters:
+            self.car_class = parameters["car_class"]
+
+        if "track" in parameters:
+            self.track = parameters["track"]
+
+        if "track_conditions" in parameters:
+            self.track_conditions = parameters["track_conditions"]
+
+        if "tags" in parameters:
+            self.tags = parameters["tags"]
+
+        

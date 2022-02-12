@@ -3,9 +3,6 @@ from classes.webapi.FlaskApp import FlaskApp
 
 def main():
     # FlaskApp.app.run()
-    
-    DBHandler.test_get()
-
     pass
 
 
