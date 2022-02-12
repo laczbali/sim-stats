@@ -41,6 +41,8 @@ class GameDirtRally2(GameHandler):
             run_data = RunData()
         else:
             run_data = self._run_result
+
+        run_data.game_name = "DirtRally2"
         
         # lap times are not relevant for Dirt Rally 2
         # however the lap_time field contains the actual value of the current run

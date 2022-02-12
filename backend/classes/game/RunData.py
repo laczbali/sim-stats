@@ -7,6 +7,8 @@ class RunData:
     """
     
     def __init__(self):
+        self.game_name = ""
+
         self.lap_times_sec = [] # user chooses how it is saved in DB (GameHandler.GameHandlerProcessMode)
         self.run_time_sec : float = 0 # does not get saved in DB
 
