@@ -7,12 +7,15 @@ from classes.game.GameWrapper import GameWrapper
 
 class FlaskApp:
 
+    # set up flask app
     app: Flask = Flask(__name__)
     cors: CORS = CORS(
             app,
             origins=["http://127.0.0.1"],
             supports_credentials=True
     )
+
+    # disable logging of API calls
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
     
@@ -59,6 +62,10 @@ class FlaskApp:
         # get parameters from request
         parameters = request.get_json()
 
+        # check that the game_name is given
+        if parameters == None or "game_name" not in parameters:
+            return JsonResponse.make_response("No game_name given")
+
         # start the run
         return JsonResponse.make_response(GameWrapper.start_run(parameters))
 
@@ -72,3 +79,32 @@ class FlaskApp:
 
         # stop the run
         return JsonResponse.make_response(GameWrapper.stop_run())
+
+
+    
+    @app.route("/game/status")
+    def get_run_status():
+        """
+        Returns the status of the current run
+        """
+
+        # get status of the run
+        return JsonResponse.make_response(GameWrapper.get_run_status())
+
+
+    
+    @app.route("/game/process", methods=["POST"])
+    def process_run():
+        """
+        Processes the current run
+        """
+
+        # get parameters from request
+        parameters = request.get_json()
+
+        # check that the mode is given
+        if parameters == None or "mode" not in parameters:
+            return JsonResponse.make_response("No mode given")
+
+        # process the run
+        return JsonResponse.make_response(GameWrapper.process_run(parameters))

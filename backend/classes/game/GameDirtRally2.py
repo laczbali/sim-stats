@@ -9,6 +9,18 @@ from classes.database.DBHandler import DBHandler
 from classes.game.RunData import RunData
 from classes.game.GameHandler import GameHandler, GameHandlerState
 
+# TODO: on initial startup the get_result query errors
+
+# TODO: handle runs as laps instead,
+# so multiple go-s at the same track can be handled as one run
+# (as an optinal setting)
+
+# TODO: under *some* circumstances, the result will be 00:00:000,
+# even tough the start/stop states seem to be correct.
+
+# TODO: an aborted can't be "stopped", it needs to be processed
+
+# TODO: mid-run restarts are not handled well at all
 
 class GameDirtRally2(GameHandler):
 
@@ -71,8 +83,7 @@ class GameDirtRally2(GameHandler):
         )
 
         # get car & track info only when the run is started
-        # runtime is the total runtime, including waiting for the green light
-        if GameDirtRally2._bit_stream_to_float32(self.udp_data(), DirtRally2Fields.run_time.value * 4) > 0:
+        if self.get_state() == GameHandlerState.RUNNING:
 
             # get car info
             if run_data.car == '' or run_data.car == "AUTO-DETECT":

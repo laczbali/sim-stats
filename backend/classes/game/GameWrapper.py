@@ -1,5 +1,5 @@
 from classes.game.RunData import RunData
-from classes.game.GameHandler import GameHandler
+from classes.game.GameHandler import GameHandler, GameHandlerProcessMode, GameHandlerState
 from classes.game.GameDirtRally2 import GameDirtRally2
 
 
@@ -100,3 +100,41 @@ class GameWrapper:
 
         except Exception as e:
             return "Could not stop run" + "\n" + str(e)
+
+
+
+    def get_run_status():
+        """
+        Returns the status of the current run
+        """
+        try:
+            response = {}
+
+            # get status of the run
+            state = GameWrapper.game_instance.get_state()
+            response["state"] = str(state.name)
+
+            # add results to response, if finished
+            if state == GameHandlerState.FINISHED:
+                response["results"] = GameWrapper.game_instance.get_run_result()
+
+            return response
+
+
+        except Exception as e:
+            return "Could not get run status" + "\n" + str(e)
+
+
+
+    def process_run(parameters):
+
+        mode = GameHandlerProcessMode[parameters["mode"]]
+
+        if len(list(parameters.keys())) > 1:
+            edited_data = GameWrapper.game_instance.get_run_result()
+            edited_data.set_parameters(parameters)
+        else:
+            edited_data = None
+
+        GameWrapper.game_instance.process_run(mode, edited_data)
+        return "ok"
