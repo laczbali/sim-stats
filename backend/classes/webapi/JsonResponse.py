@@ -1,11 +1,12 @@
-from flask import json, make_response, request
+from flask import make_response
+import jsonpickle
 import gzip
 
 class JsonResponse:
 
     def make_response(message):
         content = gzip.compress(
-            json.dumps( message ).encode("utf-8"), 5,
+            jsonpickle.encode(message, unpicklable=False).encode('utf-8')
         )
 
         resp = make_response(content)
