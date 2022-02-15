@@ -24,6 +24,9 @@ class RunData:
         self.tags = []
 
         self.run_date : datetime = datetime.datetime.now()
+
+        self.auto_save_enabled : bool = False
+        self.auto_restart_enabled : bool = False
     
 
 
@@ -56,5 +59,11 @@ class RunData:
 
         if "tags" in parameters:
             self.tags = parameters["tags"]
+
+        if "auto_save_enabled" in parameters:
+            self.auto_save_enabled = parameters["auto_save_enabled"]
+
+        if "auto_restart_enabled" in parameters:
+            self.auto_restart_enabled = parameters["auto_restart_enabled"]
 
         

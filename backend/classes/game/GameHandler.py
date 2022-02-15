@@ -137,7 +137,7 @@ class GameHandler(ABC):
 
 
 
-    def process_run(self, process_mode: GameHandlerProcessMode, edited_data: RunData = None):
+    def process_run(self, process_mode: GameHandlerProcessMode, edited_data: RunData = None, keep_config = False):
         """
         Saves or discards the run data, as selected by the user
 
@@ -195,7 +195,7 @@ class GameHandler(ABC):
             DBHandler.save_run(data_to_process)
 
         # reset instance
-        self._reset_instance()
+        self._reset_instance(keep_config=keep_config)
 
 
 
@@ -212,6 +212,9 @@ class GameHandler(ABC):
             track_conditions = self._run_result.track_conditions
             car_name = self._run_result.car
             car_class = self._run_result.car_class
+            tags = self._run_result.tags
+            auto_save = self._run_result.auto_save_enabled
+            auto_restart = self._run_result.auto_restart_enabled
 
             # set up a new run, with the previous config values
             self._run_result = RunData()
@@ -219,6 +222,9 @@ class GameHandler(ABC):
             self._run_result.track_conditions = track_conditions
             self._run_result.car = car_name
             self._run_result.car_class = car_class
+            self._run_result.tags = tags
+            self._run_result.auto_save_enabled = auto_save
+            self._run_result.auto_restart_enabled = auto_restart
         else:
             self._run_result = None
 
@@ -239,7 +245,7 @@ class GameHandler(ABC):
             self.process_run(GameHandlerProcessMode.DISCARD)
             return
 
-        if self.get_state() == GameHandlerState.FINISHED:
+        if self.get_state() == GameHandlerState.FINISHED or self.get_state() == GameHandlerState.ABORTED:
             self.process_run(GameHandlerProcessMode.DISCARD)
             return
 

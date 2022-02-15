@@ -5,28 +5,28 @@ import struct
 from threading import Thread
 from collections import defaultdict
 
+from sqlalchemy import false
+
 from classes.database.DBHandler import DBHandler
 from classes.game.RunData import RunData
-from classes.game.GameHandler import GameHandler, GameHandlerState
+from classes.game.GameHandler import GameHandler, GameHandlerProcessMode, GameHandlerState
 
-# TODO: on initial startup the get_result query errors
+# high priority:
+#   TODO: under *some* circumstances, the result will be 00:00:000,
+#   even tough the start/stop states seem to be correct.
+#   maybe when you are setting a best time?
 
-# TODO: handle runs as laps instead,
-# so multiple go-s at the same track can be handled as one run
-# (as an optinal setting)
+# low priority:
+#   TODO: on initial startup the get_result query errors
+#   TODO: do something about unclear car detection
 
-# TODO: under *some* circumstances, the result will be 00:00:000,
-# even tough the start/stop states seem to be correct.
-
-# TODO: an aborted can't be "stopped", it needs to be processed
-
-# TODO: mid-run restarts are not handled well at all
 
 class GameDirtRally2(GameHandler):
 
     def __init__(self):
         super().__init__()
         
+        self._restart_abort = False # set to true, if the state was set to abort due to an ingame restart 
         self.car_list = DirtRally2CarList()
         self.track_list = DirtRally2TrackList()
 
@@ -72,6 +72,9 @@ class GameDirtRally2(GameHandler):
             self.udp_data(), DirtRally2Fields.last_lap_time.value * 4
         )
 
+        # debug
+        # print(f"last_lap_time: {run_data.run_time_sec:.2f}")
+
         # will always be 1
         run_data.total_laps = GameDirtRally2._bit_stream_to_float32(
             self.udp_data(), DirtRally2Fields.total_laps.value * 4
@@ -104,6 +107,8 @@ class GameDirtRally2(GameHandler):
                 )
                 print("* identified track: " + run_data.track)
 
+        # debug
+        # print(f"runtime: {run_data.lap_times_sec[0]:.2f}   state: {self.get_state().name}")
 
         self._run_result = run_data
 
@@ -130,7 +135,35 @@ class GameDirtRally2(GameHandler):
         
         # Start parsing the incoming UDP data
         self._set_state(GameHandlerState.WAITING_FOR_START)
-        Thread(target=self._gather_data, daemon=True).start()
+        Thread(target=self._gather_wrapper, daemon=True).start()
+
+
+
+    def _gather_wrapper(self):
+        """
+        Calls _gather_data, with an additional layer on top,
+        to handle auto-restarting the run when it is stopped
+
+        If auto-restart is enabled, it will also enable auto-save,
+        and it will kepp the run config
+        """
+
+        self._run_result.auto_save_enabled = True if self._run_result.auto_restart_enabled else self._run_result.auto_save_enabled
+      
+        should_run = True
+        while should_run:
+            should_run = False
+
+            self._gather_data()
+
+            if self._run_result.auto_restart_enabled:
+                # run again, if it was aborted due to an in-game restart
+                if self.get_state() == GameHandlerState.ABORTED and self._restart_abort:
+                    should_run = True
+
+                # run again, if the state is in idle (run finished & processed)
+                if self.get_state() == GameHandlerState.IDLE:
+                    should_run = True
 
 
 
@@ -142,11 +175,12 @@ class GameDirtRally2(GameHandler):
         - Starts/Stops the UDP listner
         """
 
-        print("* starting run for DirtRally2")
+        print(f"* starting run for DirtRally2 (autosave: {self._run_result.auto_save_enabled}, auto-restart: {self._run_result.auto_restart_enabled})")
 
         last_runtime_value = 0
         current_runtime_value = 0
         self._stop = False
+        self._restart_abort = False
 
         self._start_listening()
 
@@ -170,15 +204,20 @@ class GameDirtRally2(GameHandler):
                 if self._run_result.laps_completed == self._run_result.total_laps:
                     self._set_state(GameHandlerState.FINISHED)
                 else:
+                    self._restart_abort = True
                     self._set_state(GameHandlerState.ABORTED)
 
         # adjust data stucture, because the general structure expects the run result in the lap_times_sec array
         self._run_result.lap_times_sec = [self._run_result.run_time_sec]
+        result_time_str = RunData.format_time(self._run_result.run_time_sec)
+
+        # auto-save result if not aborted, and setting is set
+        if self.get_state() == GameHandlerState.FINISHED and self._run_result.auto_save_enabled:
+            self.process_run(GameHandlerProcessMode.ALL, keep_config=self._run_result.auto_restart_enabled)
 
         # shut down UDP listener
         self._stop_listening()
-        result_time_str = RunData.format_time(self._run_result.run_time_sec)
-        print(f"* stopping run for DirtRally2 ( {result_time_str} )")
+        print(f"* stopping run for DirtRally2 ( {result_time_str} ) - state is now: {self.get_state().name}" + (f" (in-game restart)" if self._restart_abort else ""))
 
 
 
