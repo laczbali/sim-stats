@@ -55,15 +55,6 @@ class GameDirtRally2(GameHandler):
             run_data = self._run_result
 
         run_data.game_name = "DirtRally2"
-        
-        # lap times are not relevant for Dirt Rally 2
-        # however the lap_time field contains the actual value of the current run
-        # and we use that to detect state changes
-        if len(run_data.lap_times_sec) == 0:
-            run_data.lap_times_sec.append(0)
-        run_data.lap_times_sec[0] = GameDirtRally2._bit_stream_to_float32(
-            self.udp_data(), DirtRally2Fields.lap_time.value * 4
-        )
 
         # the "last_lap_time" fields gets a value after a run has ended
         # it contains the run time of the run that just ended
@@ -74,7 +65,16 @@ class GameDirtRally2(GameHandler):
 
         # BUG: under some circumstances, the result will be 00:00:000, in that case use the last lap time
         if run_data.run_time_sec == 0:
-            run_data.run_time_sec = run_data.lap_times_sec[0]
+            run_data.run_time_sec = run_data.lap_times_sec[0] if len(run_data.lap_times_sec) > 0 else 0
+        
+        # lap times are not relevant for Dirt Rally 2
+        # however the lap_time field contains the actual value of the current run
+        # and we use that to detect state changes
+        if len(run_data.lap_times_sec) == 0:
+            run_data.lap_times_sec.append(0)
+        run_data.lap_times_sec[0] = GameDirtRally2._bit_stream_to_float32(
+            self.udp_data(), DirtRally2Fields.lap_time.value * 4
+        )
 
         # will always be 1
         run_data.total_laps = GameDirtRally2._bit_stream_to_float32(
