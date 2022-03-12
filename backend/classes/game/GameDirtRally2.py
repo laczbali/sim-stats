@@ -72,8 +72,9 @@ class GameDirtRally2(GameHandler):
             self.udp_data(), DirtRally2Fields.last_lap_time.value * 4
         )
 
-        # debug
-        # print(f"last_lap_time: {run_data.run_time_sec:.2f}")
+        # BUG: under some circumstances, the result will be 00:00:000, in that case use the last lap time
+        if run_data.run_time_sec == 0:
+            run_data.run_time_sec = run_data.lap_times_sec[0]
 
         # will always be 1
         run_data.total_laps = GameDirtRally2._bit_stream_to_float32(
@@ -108,7 +109,8 @@ class GameDirtRally2(GameHandler):
                 print("* identified track: " + run_data.track)
 
         # debug
-        # print(f"runtime: {run_data.lap_times_sec[0]:.2f}   state: {self.get_state().name}")
+        if run_data.lap_times_sec[0] > 0 or run_data.run_time_sec > 0 or run_data.laps_completed > 0:
+            print(f"{run_data.lap_times_sec[0]:.2f}\t{run_data.run_time_sec:.2f}\t{run_data.laps_completed}")
 
         self._run_result = run_data
 
